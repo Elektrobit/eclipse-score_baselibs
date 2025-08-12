@@ -79,16 +79,6 @@ void ConstructDltExtendedHeader(score::mw::log::detail::DltExtendedHeader& exten
     std::ignore = std::copy(ctx_id.data_.begin(), ctx_id.data_.end(), extended_header.ctid.begin());
 }
 
-template <typename T>
-std::size_t GetBufferSizeCasted(T buffer_size) noexcept
-{
-    //  We only intend to use conversion function with human readable messages
-    //  plus final memory management method will be avoiding dynamic allocation
-    //  which limits maximum buffer size
-    static_assert(sizeof(T) <= sizeof(std::size_t), "Buffer size conversion error");
-    return static_cast<std::size_t>(buffer_size);
-}
-
 void ConstructStorageVerbosePacket(score::mw::log::detail::VerbosePayload& header_payload,
                                    const score::mw::log::detail::LogEntry& entry,
                                    const score::mw::log::detail::LoggingIdentifier& ecu,
@@ -111,15 +101,13 @@ void ConstructStorageVerbosePacket(score::mw::log::detail::VerbosePayload& heade
     score::mw::log::detail::DltStorageHeader storage_header{};
     ConstructDltStorageHeader(storage_header, svp_time.sec, svp_time.ms);
 
-    /* KW_SUPPRESS_START:AUTOSAR.LAMBDA.REF_LIFETIME: lambda is called on stack variables in the body of the function */
-    std::ignore = header_payload.Put([&storage_header](const score::cpp::span<score::mw::log::detail::Byte> destination) {
+    std::ignore = header_payload.Put([&storage_header](const score::cpp::v1::span<score::mw::log::detail::Byte> destination) {
         const auto destination_size = static_cast<std::size_t>(destination.size());
         const auto copy_size = std::min(destination_size, sizeof(storage_header));
         // NOLINTNEXTLINE(score-banned-function) memcpy is needed here
         std::ignore = std::memcpy(destination.data(), &storage_header, copy_size);
         return copy_size;
     });
-    /* KW_SUPPRESS_END:AUTOSAR.LAMBDA.REF_LIFETIME */
 
     score::mw::log::detail::DltVerboseHeader dlt_header{};
     ::score::mw::log::detail::ConstructDltStandardHeaderTypes(dlt_header.standard, header_size, message_count, true);
@@ -127,14 +115,12 @@ void ConstructStorageVerbosePacket(score::mw::log::detail::VerbosePayload& heade
 
     ConstructDltExtendedHeader(dlt_header.extended, entry.log_level, entry.num_of_args, entry.app_id, entry.ctx_id);
 
-    /* KW_SUPPRESS_START:AUTOSAR.LAMBDA.REF_LIFETIME: lambda is called on stack variables in the body of the function */
-    std::ignore = header_payload.Put([&dlt_header](const score::cpp::span<score::mw::log::detail::Byte> destination) {
+    std::ignore = header_payload.Put([&dlt_header](const score::cpp::v1::span<score::mw::log::detail::Byte> destination) {
         const auto copy_size = std::min(static_cast<std::size_t>(destination.size()), sizeof(dlt_header));
         // NOLINTNEXTLINE(score-banned-function) memcpy is needed here
         std::ignore = std::memcpy(destination.data(), &dlt_header, copy_size);
         return copy_size;
     });
-    /* KW_SUPPRESS_END:AUTOSAR.LAMBDA.REF_LIFETIME */
 }
 
 }  //  anonymous namespace
@@ -155,12 +141,10 @@ void ConstructDltStandardHeaderTypes(DltStandardHeader& standard,
 {
     //  static_cast allowed due to flags values within uint8_t range
     standard.htyp = static_cast<std::uint8_t>(kDltHtypWEID | kDltHtypWTMS | kDltHtypVERS);
-    /* KW_SUPPRESS_START:UNREACH.GEN: False positive. */
     if (use_extended_header)
     {
         standard.htyp |= static_cast<std::uint8_t>(kDltHtypUEH);
     }
-    /* KW_SUPPRESS_END:UNREACH.GEN */
     standard.mcnt = message_count;
     // htons is library function which uses c-style conversion
     // coverity[autosar_cpp14_a5_2_2_violation]
@@ -212,18 +196,16 @@ void DltMessageBuilder::SetNextMessage(LogRecord& log_record) noexcept
                                   score::mw::log::detail::SVPTime{timestamp, seconds, microsecs});
 }
 
-score::cpp::optional<score::cpp::span<const std::uint8_t>> DltMessageBuilder::GetNextSpan() noexcept
+score::cpp::optional<score::cpp::v1::span<const std::uint8_t>> DltMessageBuilder::GetNextSpan() noexcept
 {
     if (!log_record_.has_value())
     {
         return {};
     }
 
-    score::cpp::optional<score::cpp::span<const std::uint8_t>> return_result = {};
+    score::cpp::optional<score::cpp::v1::span<const std::uint8_t>> return_result = {};
 
-    /* KW_SUPPRESS_START:MISRA.VAR.MIN.VIS: False positive. Variable used across multiple switch cases. */
     detail::VerbosePayload& verbose_payload = log_record_.value().get().getVerbosePayload();
-    /* KW_SUPPRESS_END:MISRA.VAR.MIN.VIS */
     switch (parsing_phase_)  // LCOV_EXCL_BR_LINE: exclude the "default" branch.
     {
         case ParsingPhase::kHeader:

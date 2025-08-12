@@ -48,6 +48,12 @@ struct InotifyTest : ::testing::Test
 
 TEST_F(InotifyTest, AddWatchSuccessfull)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Add Watch Successfull");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto wd = score::os::Inotify::instance().inotify_add_watch(
         fd.value(), temp_dir_.c_str(), score::os::Inotify::EventMask::kAccess);
     ASSERT_TRUE(wd.has_value());
@@ -55,6 +61,12 @@ TEST_F(InotifyTest, AddWatchSuccessfull)
 
 TEST_F(InotifyTest, AddWatchFailsIfDirectoryDoesNotExist)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Add Watch Fails If Directory Does Not Exist");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto wd =
         score::os::Inotify::instance().inotify_add_watch(fd.value(), "/blah", score::os::Inotify::EventMask::kInCreate);
     ASSERT_FALSE(wd.has_value());
@@ -63,6 +75,12 @@ TEST_F(InotifyTest, AddWatchFailsIfDirectoryDoesNotExist)
 
 TEST_F(InotifyTest, AddWatchFailsWithoutInit)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Add Watch Fails Without Init");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto wd =
         score::os::Inotify::instance().inotify_add_watch(0, temp_dir_.c_str(), score::os::Inotify::EventMask::kInCreate);
     ASSERT_FALSE(wd.has_value());
@@ -71,6 +89,12 @@ TEST_F(InotifyTest, AddWatchFailsWithoutInit)
 
 TEST_F(InotifyTest, AddWatchFailsWithEBADF)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Add Watch Fails With EBADF");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto wd =
         score::os::Inotify::instance().inotify_add_watch(-1, temp_dir_.c_str(), score::os::Inotify::EventMask::kInCreate);
     ASSERT_FALSE(wd.has_value());
@@ -79,6 +103,12 @@ TEST_F(InotifyTest, AddWatchFailsWithEBADF)
 
 TEST_F(InotifyTest, RemoveWatchSuccessfull)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Remove Watch Successfull");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto wd = score::os::Inotify::instance().inotify_add_watch(
         fd.value(), temp_dir_.c_str(), score::os::Inotify::EventMask::kInMovedTo);
     ASSERT_TRUE(wd.has_value());
@@ -88,6 +118,12 @@ TEST_F(InotifyTest, RemoveWatchSuccessfull)
 
 TEST_F(InotifyTest, RemoveWatchFailsWithoutInit)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Remove Watch Fails Without Init");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto ret = score::os::Inotify::instance().inotify_rm_watch(1, 1);
     ASSERT_FALSE(ret.has_value());
     // Error is not specified and thus OS specific
@@ -95,6 +131,12 @@ TEST_F(InotifyTest, RemoveWatchFailsWithoutInit)
 
 TEST_F(InotifyTest, RemoveWatchFailsWithEBADF)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Remove Watch Fails With EBADF");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto ret = score::os::Inotify::instance().inotify_rm_watch(-1, 0);
     ASSERT_FALSE(ret.has_value());
     EXPECT_EQ(ret.error(), score::os::Error::Code::kBadFileDescriptor);
@@ -102,6 +144,12 @@ TEST_F(InotifyTest, RemoveWatchFailsWithEBADF)
 
 TEST_F(InotifyTest, RemoveWatchFailsWithInvalidArguments)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "InotifyTest Remove Watch Fails With Invalid Arguments");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     const auto ret = score::os::Inotify::instance().inotify_rm_watch(0, 0);
     ASSERT_FALSE(ret.has_value());
     // Error is not specified and thus OS specific

@@ -31,9 +31,7 @@ namespace detail
 namespace
 {
 constexpr auto SLOG_BUFFER_DEFAULT = 0;
-/* KW_SUPPRESS_START:MISRA.USE.EXPANSION: Design decision to use macros for severity level definitions */
 constexpr auto SLOG_VERBOSITY_DEFAULT = SLOG2_DEBUG2;
-/* KW_SUPPRESS_END:MISRA.USE.EXPANSION */
 
 std::size_t CheckTheMaxCapacity(const std::size_t capacity) noexcept
 {
@@ -197,13 +195,7 @@ void SlogBackend::Init(const std::uint8_t verbosity) noexcept
     slog_buffer_config_.buffer_config[SLOG_BUFFER_DEFAULT].buffer_name = app_id_.c_str();
     slog_buffer_config_.buffer_config[SLOG_BUFFER_DEFAULT].num_pages = 16;  // 16*4kB = 64kB
 
-    std::uint32_t flag{0U};
-// Current solution use compile time flag. Should be removed implementing Ticket-191227.
-// coverity[autosar_cpp14_a16_0_1_violation]
-#if defined(ENABLE_STARTUP_PHASE_TRACES)
-    flag = SLOG2_ALLOC_TYPE_PHYSICAL;
-#endif
-    const auto result = slog2_instance_->slog2_register(&slog_buffer_config_, &slog_buffer_, flag);
+    const auto result = slog2_instance_->slog2_register(&slog_buffer_config_, &slog_buffer_, 0U);
     if (result.has_value() == false)
     {
         const auto underlying_error = result.error().ToStringContainer(result.error());

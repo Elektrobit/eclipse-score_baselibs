@@ -10,7 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@score-baselibs//bazel:unit_tests.bzl", "cc_gtest_unit_test")
+load("@score-baselibs//bazel:unit_tests.bzl", "cc_gtest_unit_test", "cc_unit_test_suites_for_host_and_qnx")
 load("@score-baselibs//score/language/safecpp:toolchain_features.bzl", "COMPILER_WARNING_FEATURES")
 
 cc_library(
@@ -39,7 +39,6 @@ cc_library(
     tags = ["FFI"],
     visibility = [
         "//visibility:public", # platform_only
-        # "@ddad@score-baselibs//score/memory:__subpackages__",
     ],
     deps = [
         ":flock_mutex",
@@ -58,7 +57,6 @@ cc_library(
     tags = ["FFI"],
     visibility = [
         "//visibility:public", # platform_only
-        # "@ddad@score-baselibs//score/memory:__subpackages__",
     ],
     deps = [
         ":flock_mutex",
@@ -74,7 +72,6 @@ cc_library(
     tags = ["FFI"],
     visibility = [
         "//visibility:public", # platform_only
-        # "@ddad@score-baselibs//score/memory:__subpackages__",
     ],
     deps = [
         "@score-baselibs//score/memory/shared:lock_file",
@@ -89,7 +86,6 @@ cc_gtest_unit_test(
     features = COMPILER_WARNING_FEATURES,
     visibility = [
         "@score-baselibs//score/memory:__pkg__",
-        # "@ddad@score-baselibs//score/memory:__pkg__",
     ],
     deps = [
         ":exclusive_flock_mutex",
@@ -97,5 +93,15 @@ cc_gtest_unit_test(
         "@score-baselibs//score/os:fcntl",
         "@score-baselibs//score/os/mocklib:fcntl_mock",
         "@score-baselibs//score/os/mocklib:stat_mock",
+    ],
+)
+
+cc_unit_test_suites_for_host_and_qnx(
+    name = "unit_test_suite",
+    cc_unit_tests = [
+        ":unit_test",
+    ],
+    visibility = [
+        "@score-baselibs//score/memory/shared:__pkg__",
     ],
 )

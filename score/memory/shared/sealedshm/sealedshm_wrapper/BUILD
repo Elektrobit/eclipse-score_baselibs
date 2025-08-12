@@ -10,7 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@score-baselibs//bazel:unit_tests.bzl", "cc_gtest_unit_test")
+load("@score-baselibs//bazel:unit_tests.bzl", "cc_gtest_unit_test", "cc_unit_test_suites_for_host_and_qnx")
 load("@score-baselibs//score/language/safecpp:toolchain_features.bzl", "COMPILER_WARNING_FEATURES")
 
 cc_library(
@@ -67,7 +67,6 @@ cc_gtest_unit_test(
     ],
     visibility = [
         "@score-baselibs//score/memory:__pkg__",
-        # "@ddad@score-baselibs//score/memory:__pkg__",
     ],
     deps = [
         ":sealedshm",
@@ -77,4 +76,14 @@ cc_gtest_unit_test(
         "@platforms//os:linux": [],
         "@platforms//os:qnx": ["@score-baselibs//score/os/mocklib/qnx:mman_mock"],
     }),
+)
+
+cc_unit_test_suites_for_host_and_qnx(
+    name = "unit_test_suite",
+    cc_unit_tests = [
+        ":unit_test",
+    ],
+    visibility = [
+        "@score-baselibs//score/memory/shared:__pkg__",
+    ],
 )

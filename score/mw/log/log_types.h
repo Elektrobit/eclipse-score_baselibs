@@ -244,8 +244,7 @@ LogStr(const LogString::CharType (&array)[N]) noexcept
 /// \public
 /// \note Maximum supported size for DLT output is less than 64 KB. Bytes exceeding that limit will be cropped.
 /// \note Recommended to split the output in chunks of 1400 Bytes to avoid IP fragmentation DLT packets.
-using LogRawBuffer =
-    score::cpp::span<const char>; /* KW_SUPPRESS:AUTOSAR.BUILTIN_NUMERIC: We explicitly neither want signed/unsigned byte */
+using LogRawBuffer = score::cpp::v1::span<const char>;
 
 /// \brief Create a LogRawBuffer from a scalar or array-of-scalars type instance
 ///
@@ -269,13 +268,11 @@ inline LogRawBuffer MakeLogRawBuffer(const T& value) noexcept
     // the cast is acceptable.
     // --------------------------------
 
-    /* KW_SUPPRESS_START:AUTOSAR.CAST.REINTERPRET: COMMON_ARGUMENTATION */
     // COMMON_ARGUMENTATION.
     // coverity[autosar_cpp14_a5_2_4_violation]
     return {reinterpret_cast<const char*>(  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast) COMMON_ARGUMENTATION
                 &value),
             static_cast<LogRawBuffer::size_type>(sizeof(T))};
-    /* KW_SUPPRESS_END:AUTOSAR.CAST.REINTERPRET */
 }
 
 /// \brief Create a LogRawBuffer from an score::cpp::span referencing an array of scalars.
@@ -284,17 +281,15 @@ inline LogRawBuffer MakeLogRawBuffer(const T& value) noexcept
 /// \param values The span referencing the array.
 /// \return An instance of LogRawBuffer, whose lifetime is limited by that of the given input span.
 template <typename T>
-inline LogRawBuffer MakeLogRawBuffer(const score::cpp::span<T> values)
+inline LogRawBuffer MakeLogRawBuffer(const score::cpp::v1::span<T> values)
 {
     // It is used by static_assert to check scalar types.
     // coverity[autosar_cpp14_a0_1_1_violation : FALSE]
     constexpr const bool IsEligible = std::is_scalar<T>::value;
     static_assert(IsEligible, "Only scalar types are allowed for dumping for now.");
 
-    using SpanSizeType = typename score::cpp::span<T>::size_type;
-    /* KW_SUPPRESS_START:MISRA.USE.EXPANSION:This is the recommended way to verify preconditions */
+    using SpanSizeType = typename score::cpp::v1::span<T>::size_type;
     SCORE_LANGUAGE_FUTURECPP_PRECONDITION_MESSAGE(values.size() >= static_cast<SpanSizeType>(0), "score::cpp::span with negative size refused.");
-    /* KW_SUPPRESS_END:MISRA.USE.EXPANSION */
 
     // ----- COMMON_ARGUMENTATION ----
     // We cast to a char to print the byte representation of the given span. Since we know that:
@@ -304,17 +299,12 @@ inline LogRawBuffer MakeLogRawBuffer(const score::cpp::span<T> values)
     // the cast is acceptable.
     // -------------------------------
 
-    /* KW_SUPPRESS_START:AUTOSAR.CAST.REINTERPRET: COMMON_ARGUMENTATION */
-    /* KW_SUPPRESS_START:MISRA.CAST.INT.SIGN: Although the cast is non-trivial, it's still easy to understand and */
-    /* other variants of the code would also require suppressions or were more complicated and not well-maintainable */
     const auto buffer_size = values.size() * static_cast<LogRawBuffer::size_type>(sizeof(T));
     // COMMON_ARGUMENTATION.
     // coverity[autosar_cpp14_a5_2_4_violation]
     return {reinterpret_cast<const char*>(  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast) COMMON_ARGUMENTATION
                 values.data()),
             buffer_size};
-    /* KW_SUPPRESS_END:MISRA.CAST.INT.SIGN */
-    /* KW_SUPPRESS_END:AUTOSAR.CAST.REINTERPRET */
 }
 
 /// \brief Create a LogRawBuffer from an std::vector referencing an array of scalars.
@@ -326,7 +316,7 @@ template <typename T>
 inline LogRawBuffer MakeLogRawBuffer(const std::vector<T>& values) noexcept
 {
     return MakeLogRawBuffer(
-        score::cpp::span<const T>(values.data(), static_cast<typename score::cpp::span<const T>::size_type>(values.size())));
+        score::cpp::v1::span<const T>(values.data(), static_cast<typename score::cpp::v1::span<const T>::size_type>(values.size())));
 }
 
 /// \brief Create a LogRawBuffer from an std::array consisting of scalars.
@@ -337,7 +327,8 @@ inline LogRawBuffer MakeLogRawBuffer(const std::vector<T>& values) noexcept
 template <typename T, std::size_t N>
 inline LogRawBuffer MakeLogRawBuffer(const std::array<T, N>& values) noexcept
 {
-    return MakeLogRawBuffer(score::cpp::span<const T>(values.data(), static_cast<typename score::cpp::span<const T>::size_type>(N)));
+    return MakeLogRawBuffer(
+        score::cpp::v1::span<const T>(values.data(), static_cast<typename score::cpp::v1::span<const T>::size_type>(N)));
 }
 
 }  // namespace log

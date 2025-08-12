@@ -45,6 +45,12 @@ class TestableBase : public ObjectSeam<Object>
 
 TEST(ObjectSeamTest, CopyConstructor)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "ObjectSeamTest Copy Constructor");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     MockObject mock("Testing Copy");
     TestableBase<MockObject> b1;
     TestableBase<MockObject> b2 = b1;  // Copy constructor
@@ -56,6 +62,12 @@ TEST(ObjectSeamTest, CopyConstructor)
 
 TEST(ObjectSeamTest, MoveConstructor)
 {
+    RecordProperty("Verifies", "SCR-46010294");
+    RecordProperty("ASIL", "B");
+    RecordProperty("Description", "ObjectSeamTest Move Constructor");
+    RecordProperty("TestType", "Interface test");
+    RecordProperty("DerivationTechnique", "Generation and analysis of equivalence classes");
+
     MockObject mock("Testing Move");
     TestableBase<MockObject> b1;
     TestableBase<MockObject> b2 = std::move(b1);  // Move constructor

@@ -49,7 +49,10 @@ cc_gtest_unit_test(
     srcs = ["error_test.cpp"],
     features = COMPILER_WARNING_FEATURES,
     visibility = [
-        # "@ddad@score-baselibs//score/language/safecpp/safe_math:__pkg__",
+        "@score-baselibs//score/language/safecpp/safe_math:__pkg__",
+        "@score-baselibs//score/memory/shared:__subpackages__",
+        "//platform/aas/mw/com/impl:__subpackages__",
+        "//platform/aas/network/tunneling/pdu_handling:__subpackages__",
     ],
     deps = [":error"],
 )
@@ -67,6 +70,10 @@ cc_unit_test_suites_for_host_and_qnx(
         "@score-baselibs//score/language/safecpp/safe_math/details/multiplication:unit_test",
         "@score-baselibs//score/language/safecpp/safe_math/details/negate:unit_test",
         "@score-baselibs//score/language/safecpp/safe_math/details/type_traits:unit_test",
+    ],
+    excluded_tests_filter = [
+        # TODO(Ticket-203919): qemu on ubuntu 20.04 without KVM incorrectly supports FPE
+        "FloatingPointEnvironmentTest.*",
     ],
     visibility = ["@score-baselibs//score/language/safecpp:__pkg__"],
 )

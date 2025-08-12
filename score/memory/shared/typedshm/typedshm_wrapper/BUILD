@@ -11,6 +11,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@score-baselibs//bazel:unit_tests.bzl", "cc_unit_test_suites_for_host_and_qnx")
 load("@score-baselibs//score/language/safecpp:toolchain_features.bzl", "COMPILER_WARNING_FEATURES")
 
 selects.config_setting_group(
@@ -48,9 +49,9 @@ cc_library(
         "@score-baselibs//score/language/futurecpp",
     ] + select({
         ":QNX_AND_USE_TYPED_SHMD": [
+            "//platform/aas/intc/typedmemd/code/clientlib:typedmemd_clientlib",
+            "//platform/aas/intc/typedmemd/code/clientlib:typedmemd_clientlib_interface",
             "@score-baselibs//score/os/qnx:mman",
-            # "@ddad//platform/aas/intc/typedmemd/code/clientlib:typedmemd_clientlib",
-            # "@ddad//platform/aas/intc/typedmemd/code/clientlib:typedmemd_clientlib_interface",
         ],
         "//conditions:default": [],
     }),
@@ -71,12 +72,21 @@ cc_test(
     }),
     visibility = [
         "@score-baselibs//score/memory:__pkg__",
-        # "@ddad@score-baselibs//score/memory:__pkg__",
     ],
     deps = [
+        "//platform/aas/intc/typedmemd/code/clientlib/mock:typedsharedmemory_mock",
         "@score-baselibs//score/memory/shared/typedshm/typedshm_wrapper:typedmemory",
         "@score-baselibs//score/os/mocklib/qnx:mman_mock",
         "@googletest//:gtest_main",
-        # "@ddad//platform/aas/intc/typedmemd/code/clientlib/mock:typedsharedmemory_mock",
+    ],
+)
+
+cc_unit_test_suites_for_host_and_qnx(
+    name = "unit_test_suite",
+    cc_unit_tests = [
+        ":typed_memory_test",
+    ],
+    visibility = [
+        "@score-baselibs//score/memory/shared:__pkg__",
     ],
 )
